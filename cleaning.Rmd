@@ -31,6 +31,12 @@ Also load dplyr, tidyr, skimr, ggplot2, stringr.
 
 ```{r}
 library(palmerpenguins)
+library(dplyr)
+library(tidyr)
+library(skimr)
+library(ggplot2)
+library(stringr)
+library(lubridate)
 
 ```
 
@@ -55,11 +61,11 @@ don't need to worry about the order of the steps.  And write in English, not cod
 
 ## My list of tasks
 
-1. 
-2.
-3.
-4.
-5. 
+1. Remove Comments
+2. Remove studyName
+3. Remove Sample Number
+4. Shorten Species
+5. Remove Stage
 
 
 ## Comparing data frames
@@ -83,6 +89,7 @@ In the code chunk below create penguins_new from
 the penguins_raw data set using the assignment operator `<-`. 
 
 ```{r}
+penguins_new <- penguins_raw
 
 ```
 Now run your test code chunk again.
@@ -93,6 +100,7 @@ In the code chunk below use base functions to get a sense of the data.  (See sli
 
 
 ```{r}
+head(penguins_new)
 
 ```
 
@@ -103,11 +111,12 @@ Remember: How do you access a package?
 Do that below.
 
 ```{r}
-
+skim(penguins_new)
 ```
 
 ### Do you notice anything new? What?
 
+It gives multiple values like mean and standard deviation of multiple rows
 
 
 ## Start cleaning
@@ -196,7 +205,9 @@ A piping example. Notice that penguins_new in the environment doesn't change.
 
 ```{r eval=FALSE}
 penguins_new |> 
-     select(-studyName, -`Sample Number`)  
+     select(-studyName, -`Sample Number`)
+penguins_new |> 
+     select(-`Individual ID`, -`Date Egg`)
 ```
 
 To make it update the penguins_new object, assign
@@ -218,7 +229,8 @@ have it the way you want, assign your changes
 back to the object.
 
 ```{r}
-penguins_new |> rename(newname = oldname)
+penguins_new <- penguins_new |> 
+    rename(bill_length_mm = `Culmen Length (mm)`,bill_depth_mm = `Culmen Depth (mm)`)
 ```
 
 Don't worry about doing all of them at this point because you can always go back and make changes.
@@ -231,8 +243,8 @@ need to do? How can we find a function to do
 what we want to do?
 
 ```{r}
-penguins_raw |>  
-     mutate(year = WHAT, sex = WHAT)
+penguins_new |> 
+     mutate(year = year(`Date Egg`))
 ```
 
 Now continue working on your own for a while. 
@@ -252,6 +264,46 @@ Deleting an attribute completely.
 attr(df , "attribute name") <- NULL
 
 
+### Extracting first word from species column
+```{r}
+penguins_new <- penguins_new |> 
+  mutate(Species = word(Species, 1))
+
+```
+### Removing unnecessary columns
+```{r}
+penguins_new <- penguins_new |> 
+                select(-`Comments`,-`Delta 15 N (o/oo)`,-`Delta 13 C (o/oo)`, -`Region`, -`Stage`, -`Clutch Completion`, -`Individual ID`)
+```
+### Renaming Columns to match
+```{r}
+penguins_new <- penguins_new |> 
+    rename(`flipper_length_mm` = `Flipper Length (mm)`, `body_mass_g` = `Body Mass (g)`)
+```
+### Extracting Year
+```{r}
+penguins_new <- penguins_new |>
+      mutate(year = year(`Date Egg`))
+penguins_new <- penguins_new |>
+      select(-`Date Egg`)
+```
+### Making every column Lowercase
+```{r}
+names(penguins_new) <- tolower(names(penguins_new))
+
+```
+### Fixing component is not a factor issue
+```{r}
+penguins_new <- penguins_new |> 
+  mutate(species = factor(species), island  = factor(island),sex = factor(sex))
+
+```
+### Converting Values in `sex` to lowercase
+```{r}
+penguins_new <- penguins_new |> 
+  mutate(sex = tolower(sex))
+```
+### I do not know how to fix the length mismatch will wait for class on thursday
 ### Test code chunk.
 
 ```{r test}
@@ -270,6 +322,12 @@ As a special challenge, now add a new variable
 to your data set based on data from the raw data that
 is not currently included. 
 
+
+```{r test}
+View(penguins)
+View(penguins_raw)
+View(penguins_new)
+```
 
 
 
