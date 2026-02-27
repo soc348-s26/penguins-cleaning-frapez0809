@@ -295,7 +295,7 @@ names(penguins_new) <- tolower(names(penguins_new))
 ### Fixing component is not a factor issue
 ```{r}
 penguins_new <- penguins_new |> 
-  mutate(species = factor(species), island  = factor(island),sex = factor(sex))
+  mutate(species = factor(species), island  = factor(island),sex = factor(Sex))
 
 ```
 ### Converting Values in `sex` to lowercase
@@ -304,6 +304,11 @@ penguins_new <- penguins_new |>
   mutate(sex = tolower(sex))
 ```
 ### I do not know how to fix the length mismatch will wait for class on thursday
+```{r}
+attr(penguins_new , "spec") <- NULL
+
+```
+
 ### Test code chunk.
 
 ```{r test}
@@ -324,9 +329,12 @@ is not currently included.
 
 
 ```{r test}
-View(penguins)
-View(penguins_raw)
-View(penguins_new)
+#View(penguins)
+#View(penguins_raw)
+#View(penguins_new)
 ```
+
+
+
 
 
